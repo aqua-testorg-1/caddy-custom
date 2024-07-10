@@ -35,4 +35,4 @@ jobs:
           password: ${{  secrets.REGISTRY_PASSWORD }}
     steps:
     - name: Scan image
-      run: scan --token ${{  secrets.SCANNER_TOKEN }} --host https://cca15038ac-d.cloud.aquasec.com --local my-registry/my-demo-image:${{ github.sha }}
+      run: /opt/aquasec/scannercli scan --token ${{  secrets.SCANNER_TOKEN }} --host https://cca15038ac-d.cloud.aquasec.com --local my-registry/my-demo-image:${{ github.sha }}
