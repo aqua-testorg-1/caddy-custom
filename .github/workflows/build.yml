@@ -22,16 +22,13 @@ jobs:
     - name: Tag image with Registry
       run: docker tag my-demo-image:${{ github.sha }} my-registry/my-demo-image:${{ github.sha }}
 
+    - name: Scan image
+      container:
+      image: registry.aquasec.com/scanner:2406.10.19 
+      credentials:
+          username: ${{  secrets.REGISTRY_USERNAME }}
+          password: ${{  secrets.REGISTRY_PASSWORD }}
+      run: scan --token ${{  secrets.SCANNER_TOKEN }} --host https://cca15038ac-d.cloud.aquasec.com --local my-registry/my-demo-image:${{ github.sha }}
+
     - name: Push to Registry
       run: echo "docker push my-registry/my-demo-image:${{ github.sha }}"
-
-  test:
-    runs-on: registry.aquasec.com/scanner:2406.10.19 
-    container:
-        image: registry.aquasec.com/scanner:2406.10.19 
-        credentials:
-            username: ${{  secrets.REGISTRY_USERNAME }}
-            password: ${{  secrets.REGISTRY_PASSWORD }}
-    steps:
-    - name: Scan image
-      run: scan --token ${{  secrets.SCANNER_TOKEN }} --host https://cca15038ac-d.cloud.aquasec.com --local my-registry/my-demo-image:${{ github.sha }}
