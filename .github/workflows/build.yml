@@ -25,14 +25,29 @@ jobs:
     - name: Push to Registry
       run: echo "docker push my-registry/my-demo-image:${{ github.sha }}"
 
+    - name: Export the Docker image
+      run: docker save my-registry/my-demo-image:${{ github.sha }} > /tmp/myimage.tar
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: myimage
+        path: /tmp/myimage.tar
+
   scan:
 
     runs-on: ubuntu-latest
+    needs: build
     container:
       image: registry.aquasec.com/scanner:latest-saas
       credentials:
           username: ${{  secrets.REGISTRY_USERNAME }}
           password: ${{  secrets.REGISTRY_PASSWORD }}
     steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: myimage
+        path: /tmp
     - name: Scan image
-      run: /opt/aquasec/scannercli scan --token ${{  secrets.SCANNER_TOKEN }} --host https://cca15038ac-d.cloud.aquasec.com --local my-registry/my-demo-image:${{ github.sha }}
+      run: /opt/aquasec/scannercli scan --token ${{  secrets.SCANNER_TOKEN }} --host https://cca15038ac-d.cloud.aquasec.com --docker-archive /tmp/myimage.tar
