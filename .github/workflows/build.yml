@@ -29,10 +29,10 @@ jobs:
 
     runs-on: ubuntu-latest
     container:
-    image: registry.aquasec.com/scanner:2406.10.19 
-    credentials:
-        username: ${{  secrets.REGISTRY_USERNAME }}
-        password: ${{  secrets.REGISTRY_PASSWORD }}
+      image: registry.aquasec.com/scanner:2406.10.19 
+      credentials:
+          username: ${{  secrets.REGISTRY_USERNAME }}
+          password: ${{  secrets.REGISTRY_PASSWORD }}
 
     - name: Scan image
       run: scan --token ${{  secrets.SCANNER_TOKEN }} --host https://cca15038ac-d.cloud.aquasec.com --local my-registry/my-demo-image:${{ github.sha }}
